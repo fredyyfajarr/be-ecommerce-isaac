@@ -7,13 +7,13 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   name: {
     type: String,
-    required: [true, 'Name harus diisi'],
-    unique: [true, 'Username sudah digunakan, silahkan buat yang lain'],
+    required: [true, 'Name must filled out'],
+    unique: [true, 'Username already exist, use another username'],
   },
   email: {
     type: String,
-    required: [true, 'Email harus diisi'],
-    unique: [true, 'Email sudah terdaftar'],
+    required: [true, 'Email must filled out'],
+    unique: [true, 'Email already exist'],
     validate: {
       validator: validator.isEmail,
       message: 'Input must be email format .. (rocket@mail.com)',
@@ -21,8 +21,14 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password harus diisi'],
+    required: [true, 'Password must filled out'],
     minLength: [6, 'Password minimum 6 character'],
+    validate: {
+      validator: function (value) {
+        return /[A-Z]/.test(value) && /\d/.test(value);
+      },
+      message: 'Password must contain at least 1 uppercase letter and 1 number',
+    },
   },
   role: {
     type: String,
