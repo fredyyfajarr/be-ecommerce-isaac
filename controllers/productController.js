@@ -8,7 +8,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
   return res.status(201).json({
     message: 'Add Product Success',
-    newProduct,
+    data: newProduct,
   });
 });
 
@@ -30,13 +30,13 @@ export const allProduct = asyncHandler(async (req, res) => {
   }
 
   // Pagination
-  const pageData = req.query.page * 1 || 1;
-  const limitData = req.query.limit * 1 || 30;
-  const skipData = (pageData - 1) * limitData;
+  const page = req.query.page * 1 || 1;
+  const limitData = req.query.limit * 1 || 8;
+  const skipData = (page - 1) * limitData;
 
   query = query.skip(skipData).limit(limitData);
 
-  let countProduct = await Product.countDocuments();
+  let countProduct = await Product.countDocuments(queryObj);
   if (req.query.page) {
     if (skipData >= countProduct) {
       res.status(404);
@@ -45,11 +45,16 @@ export const allProduct = asyncHandler(async (req, res) => {
   }
 
   const products = await query;
+  const totalPage = Math.ceil(countProduct / limitData);
 
   return res.status(200).json({
     message: 'Products Show Success',
-    products,
-    count: countProduct,
+    data: products,
+    pagination: {
+      totalPage,
+      page,
+      totalProduct: countProduct,
+    },
   });
 });
 
@@ -77,7 +82,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
   return res.status(201).json({
     message: 'Product Update Success',
-    updateProduct,
+    data: updateProduct,
   });
 });
 
