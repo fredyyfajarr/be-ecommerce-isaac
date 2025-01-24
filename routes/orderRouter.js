@@ -30,6 +30,6 @@ router.get('/:id', protectedMiddleware, ownerMiddleware, detailOrder);
 router.get('/current/user', protectedMiddleware, currentUserOrder);
 
 // post /api/v1/order/callback/midtrans
-router.get('/callback/midtrans', callbackPayment);
+router.post('/callback/midtrans', callbackPayment);
 
 export default router;
