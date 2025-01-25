@@ -125,8 +125,9 @@ export const callbackPayment = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Order not found');
   }
-  if (transactionStatus == 'capture' || transactionStatus == 'settlement') {
-    if (fraudStatus == 'accept') {
+  if (transactionStatus === 'capture' || transactionStatus === 'settlement') {
+    if (fraudStatus === 'accept') {
+      orderData.status = 'Success';
       const orderProduct = orderData.itemsDetail;
 
       for (const itemProduct of orderProduct) {
@@ -137,22 +138,26 @@ export const callbackPayment = asyncHandler(async (req, res) => {
           throw new Error('Product not found');
         }
 
-        productData.stock = productData.stock - itemProduct.quantity;
+        productData.stock = productData.stock -= itemProduct.quantity;
 
         await productData.save();
       }
-
-      orderData.status = 'Success';
     }
   } else if (
-    transactionStatus == 'cancel' ||
-    transactionStatus == 'deny' ||
-    transactionStatus == 'expire'
+    transactionStatus === 'cancel' ||
+    transactionStatus === 'deny' ||
+    transactionStatus === 'expire'
   ) {
     orderData.status = 'Failed';
-  } else if (transactionStatus == 'pending') {
+  } else if (transactionStatus === 'pending') {
     orderData.status = 'Pending';
   }
-  await orderData.save();
+  try {
+    await orderData.save();
+    console.log('Order status updated:', orderData.status);
+  } catch (error) {
+    console.error('Error updating order:', error.message);
+  }
+
   return res.status(200).send('Payment Notification Success');
 });

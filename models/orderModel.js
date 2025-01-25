@@ -2,26 +2,29 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 
 const { Schema } = mongoose;
-const singleProduct = Schema({
+
+// Schema untuk item individual
+const singleProduct = new Schema({
   name: { type: String, required: true },
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   product: {
     type: mongoose.Schema.ObjectId,
-    ref: `Product`,
+    ref: 'Product',
     required: true,
   },
 });
 
+// Schema untuk order
 const orderSchema = new Schema({
   total: {
     type: Number,
     required: [true, `Total price can't be empty`],
   },
-  itemsDetail: { singleProduct },
+  itemsDetail: [singleProduct], // Definisi array dari singleProduct
   user: {
     type: Schema.ObjectId,
-    ref: `User`,
+    ref: 'User',
     required: true,
   },
   status: {
