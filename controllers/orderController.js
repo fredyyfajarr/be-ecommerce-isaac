@@ -127,7 +127,7 @@ export const callbackPayment = asyncHandler(async (req, res) => {
   }
   if (transactionStatus === 'capture' || transactionStatus === 'settlement') {
     if (fraudStatus === 'accept') {
-      orderData.status = 'Success';
+      orderData.status = 'success';
       const orderProduct = orderData.itemsDetail;
 
       for (const itemProduct of orderProduct) {
@@ -148,16 +148,11 @@ export const callbackPayment = asyncHandler(async (req, res) => {
     transactionStatus === 'deny' ||
     transactionStatus === 'expire'
   ) {
-    orderData.status = 'Failed';
+    orderData.status = 'failed';
   } else if (transactionStatus === 'pending') {
-    orderData.status = 'Pending';
+    orderData.status = 'pending';
   }
-  try {
-    await orderData.save();
-    console.log('Order status updated:', orderData.status);
-  } catch (error) {
-    console.error('Error updating order:', error.message);
-  }
+  await orderData.save();
 
   return res.status(200).send('Payment Notification Success');
 });

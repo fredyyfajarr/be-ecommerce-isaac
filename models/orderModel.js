@@ -21,7 +21,7 @@ const orderSchema = new Schema({
     type: Number,
     required: [true, `Total price can't be empty`],
   },
-  itemsDetail: [singleProduct], // Definisi array dari singleProduct
+  itemsDetail: [singleProduct],
   user: {
     type: Schema.ObjectId,
     ref: 'User',
