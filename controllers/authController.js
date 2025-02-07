@@ -64,7 +64,11 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id).select('-password');
+  if (req.params.id !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Not authorized to view this profile');
+  }
+  const user = await User.findById(req.params.id).select('-password');
 
   if (user) {
     return res.status(200).json({
@@ -74,6 +78,19 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('User not found');
   }
+});
+
+export const updateUser = asyncHandler(async (req, res) => {
+  const paramsId = req.params.id;
+  const updateUser = await User.findByIdAndUpdate(paramsId, req.body, {
+    runValidators: false,
+    new: true,
+  });
+
+  return res.status(201).json({
+    message: 'Profile Update Success',
+    data: updateUser,
+  });
 });
 
 export const logoutUser = async (req, res) => {

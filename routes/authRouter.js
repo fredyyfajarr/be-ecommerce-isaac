@@ -4,6 +4,7 @@ import {
   loginUser,
   getCurrentUser,
   logoutUser,
+  updateUser,
 } from '../controllers/authController.js';
 import { protectedMiddleware } from '../middlewares/authMiddleware.js';
 
@@ -18,7 +19,10 @@ router.post('/login', loginUser);
 //get /api/v1/auth/logout
 router.get('/logout', protectedMiddleware, logoutUser);
 
-//get /api/v1/auth/getUser
-router.get('/getUser', protectedMiddleware, getCurrentUser);
+//get /api/v1/auth/profile
+router.get('/profile/:id', protectedMiddleware, getCurrentUser);
+
+//put /api/v1/auth/profile/:id
+router.put('/profile/:id', protectedMiddleware, updateUser);
 
 export default router;

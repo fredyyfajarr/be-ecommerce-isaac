@@ -29,7 +29,15 @@ export const createOrder = asyncHandler(async (req, res) => {
       throw new Error('Product ID not found');
     }
 
-    const { name, price, _id } = productData;
+    const { name, price, _id, stock } = productData;
+
+    if (cart.quantity > stock) {
+      res.status(400);
+      throw new Error(
+        `Quantity of product ${name} is out of stock, let 's try to reorder product`
+      );
+    }
+
     const singleProduct = {
       quantity: cart.quantity,
       name,

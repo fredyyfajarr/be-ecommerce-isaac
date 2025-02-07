@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import { v2 as cloudinary } from 'cloudinary';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -24,6 +25,12 @@ import productRouter from './routes/productRouter.js';
 import orderRouter from './routes/orderRouter.js';
 
 // Middleware
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Frontend URL
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(helmet());
 app.use(ExpressMongoSanitize());
