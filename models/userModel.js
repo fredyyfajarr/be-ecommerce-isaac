@@ -7,22 +7,22 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   name: {
     type: String,
-    required: [true, 'Name must filled out'],
-    unique: [true, 'Username already exist, use another username'],
+    required: [true, 'Name must be filled out'],
+    unique: [true, 'Username already exists, use another username'],
   },
   email: {
     type: String,
-    required: [true, 'Email must filled out'],
-    unique: [true, 'Email already exist'],
+    required: [true, 'Email must be filled out'],
+    unique: [true, 'Email already exists'],
     validate: {
       validator: validator.isEmail,
-      message: 'Input must be email format .. (rocket@mail.com)',
+      message: 'Input must be in email format (example@mail.com)',
     },
   },
   password: {
     type: String,
-    required: [true, 'Password must filled out'],
-    minLength: [6, 'Password minimum 6 character'],
+    required: [true, 'Password must be filled out'],
+    minlength: [6, 'Password must be at least 6 characters'],
     validate: {
       validator: function (value) {
         return /[A-Z]/.test(value) && /\d/.test(value);
@@ -37,13 +37,18 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.pre('save', async function () {
+// ✅ Hash password before saving user
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next(); // Skip if password not modified
+
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
-userSchema.methods.comparePassword = async function (reqBody) {
-  return await bcrypt.compare(reqBody, this.password);
+// ✅ Rename comparePassword to matchPassword
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = mongoose.model('User', userSchema);

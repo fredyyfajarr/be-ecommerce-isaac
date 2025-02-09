@@ -27,7 +27,7 @@ import orderRouter from './routes/orderRouter.js';
 // Middleware
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Your frontend URL
+    origin: 'https://isaacshop.vercel.app/', // Your frontend URL
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
