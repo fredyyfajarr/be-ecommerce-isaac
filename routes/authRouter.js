@@ -5,6 +5,7 @@ import {
   getCurrentUser,
   logoutUser,
   updateUser,
+  updatePasswordUser,
 } from '../controllers/authController.js';
 import { protectedMiddleware } from '../middlewares/authMiddleware.js';
 
@@ -18,6 +19,17 @@ router.post('/login', loginUser);
 
 //get /api/v1/auth/logout
 router.get('/logout', protectedMiddleware, logoutUser);
+
+//put /api/v1/auth/profile/password/:id
+router.put(
+  '/profile/password/:id',
+  protectedMiddleware,
+  updatePasswordUser,
+  (req, res) => {
+    console.log('Route hit: /profile/password/:id', req.params);
+    res.send('Route OK');
+  }
+);
 
 //get /api/v1/auth/profile
 router.get('/profile/:id', protectedMiddleware, getCurrentUser);

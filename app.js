@@ -27,8 +27,10 @@ import orderRouter from './routes/orderRouter.js';
 // Middleware
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Frontend URL
+    origin: 'https://isaacshop.vercel.app/', // Your frontend URL
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json());
@@ -48,7 +50,10 @@ app.use(errorHandler);
 
 // Database
 mongoose
-  .connect(process.env.DATABASE, {})
+  .connect(process.env.DATABASE, {
+    serverSelectionTimeoutMS: 5000, // 5 seconds
+    socketTimeoutMS: 45000, // 45 seconds
+  })
   .then(() => {
     console.log('Database Connected');
   })

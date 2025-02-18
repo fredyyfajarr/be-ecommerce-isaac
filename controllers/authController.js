@@ -93,6 +93,27 @@ export const updateUser = asyncHandler(async (req, res) => {
   });
 });
 
+export const updatePasswordUser = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  const isMatch = await user.comparePassword(oldPassword);
+  if (!isMatch) {
+    res.status(400);
+    throw new Error('Incorrect old password');
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({ message: 'Password updated successfully' });
+});
+
 export const logoutUser = async (req, res) => {
   res.cookie('jwt', '', {
     httpOnly: true,
