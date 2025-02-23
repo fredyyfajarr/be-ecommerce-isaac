@@ -23,11 +23,12 @@ cloudinary.config({
 import authRouter from './routes/authRouter.js';
 import productRouter from './routes/productRouter.js';
 import orderRouter from './routes/orderRouter.js';
+import cartRouter from './routes/cartRouter.js';
 
 // Middleware
 app.use(
   cors({
-    origin: 'https://isaacshop.vercel.app/', // Your frontend URL
+    origin: ['https://frevan.vercel.app/', 'http://localhost:5173'], // Your frontend URL
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -44,6 +45,7 @@ app.use(express.static('./public'));
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/product', productRouter);
 app.use('/api/v1/order', orderRouter);
+app.use('/api/v1/cart', cartRouter);
 
 app.use(notFound);
 app.use(errorHandler);
