@@ -35,6 +35,11 @@ const userSchema = new Schema({
     enum: ['user', 'owner'],
     default: 'user',
   },
+  profile_image: {
+    type: String,
+    default:
+      'https://res.cloudinary.com/dlpqwetbk/image/upload/v1740400315/default_img_sfc36a.png',
+  },
 });
 
 // ✅ Hash password before saving user

@@ -1,10 +1,12 @@
 import User from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
 import asyncHandler from '../middlewares/asyncHandler.js';
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '6d',
+    expiresIn: '1d',
   });
 };
 
@@ -33,11 +35,16 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   const role = isOwner ? 'owner' : 'user';
 
+  const default_img =
+    req.body.profile_image ||
+    'https://res.cloudinary.com/dlpqwetbk/image/upload/v1740400315/default_img_sfc36a.png';
+
   const createUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
     role,
+    profile_image: default_img,
   });
   createSendResToken(createUser, 201, res);
 });
@@ -80,9 +87,68 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   }
 });
 
+export const fileUploadUser = async (file) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'profile_uploads',
+        allowed_formats: ['jpg', 'png'],
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+          reject('Failed to upload image');
+        } else {
+          resolve(result.secure_url);
+        }
+      }
+    );
+    streamifier.createReadStream(file.buffer).pipe(stream);
+  });
+};
+
+export const deleteOldImage = async (imageUrl) => {
+  if (
+    !imageUrl ||
+    imageUrl.includes('default_img_sfc36a.png') // Jika gambar adalah default, jangan hapus
+  ) {
+    return;
+  }
+
+  // Ambil public_id dari URL Cloudinary
+  const publicId = imageUrl.split('/').slice(-1)[0].split('.')[0];
+
+  try {
+    await cloudinary.uploader.destroy(`uploads/${publicId}`);
+  } catch (error) {
+    console.log('Failed to delete old image:', error);
+  }
+};
+
 export const updateUser = asyncHandler(async (req, res) => {
   const paramsId = req.params.id;
-  const updateUser = await User.findByIdAndUpdate(paramsId, req.body, {
+  let updateFields = { ...req.body };
+
+  // Cari user untuk mendapatkan profile_image lama
+  const user = await User.findById(paramsId);
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  // Jika ada file baru, hapus gambar lama kecuali default
+  if (req.file) {
+    try {
+      await deleteOldImage(user.profile_image); // Hapus foto lama dulu
+      const imageUrl = await fileUploadUser(req.file); // Upload foto baru
+      updateFields.profile_image = imageUrl; // Simpan URL baru
+    } catch (error) {
+      return res.status(500).json({ message: error });
+    }
+  }
+
+  // Update data user
+  const updateUser = await User.findByIdAndUpdate(paramsId, updateFields, {
     runValidators: false,
     new: true,
   });
