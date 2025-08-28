@@ -153,7 +153,7 @@ be-ecommerce-isaac/
 ├── .env.example        # Contoh file environment
 ├── index.js            # Entry point aplikasi
 └── package.json        # Daftar dependency dan skrip
-
+```
 ## 🤝 Kontribusi
 
 Kontribusi selalu diterima! Jika Anda ingin berkontribusi, silakan lakukan _fork_ pada repositori ini, buat _branch_ baru, dan ajukan _Pull Request_.
