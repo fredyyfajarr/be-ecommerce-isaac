@@ -139,13 +139,17 @@ Berikut adalah daftar endpoint API utama yang tersedia. Prefix untuk semua endpo
 
 ## 📁 Struktur Proyek
 
-├── src
-│   ├── config          # Konfigurasi (database, dll.)
-│   ├── controllers     # Logika bisnis untuk setiap route
-│   ├── middleware      # Middleware kustom (auth, error handler)
-│   ├── models          # Skema database Mongoose
-│   ├── routes          # Definisi endpoint API
-│   └── utils           # Fungsi bantuan (helper functions)
+Struktur direktori proyek dirancang agar modular dan mudah dipahami, memisahkan setiap *concern* ke dalam folder masing-masing untuk keterbacaan dan pemeliharaan yang lebih baik.
+
+```bash
+be-ecommerce-isaac/
+├── src/
+│   ├── config/         # Konfigurasi (database, dll.)
+│   ├── controllers/    # Logika bisnis untuk setiap route
+│   ├── middleware/     # Middleware kustom (auth, error handler)
+│   ├── models/         # Skema database Mongoose
+│   ├── routes/         # Definisi endpoint API
+│   └── utils/          # Fungsi bantuan (helper functions)
 ├── .env.example        # Contoh file environment
 ├── index.js            # Entry point aplikasi
 └── package.json        # Daftar dependency dan skrip
